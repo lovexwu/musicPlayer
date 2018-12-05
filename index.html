@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>musicPlayer</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+  <link rel="stylesheet" type="text/css" href="css/common.css">
+</head>
+<body>
+
+	<div class="musicWrap">
+		
+		<div class="music">
+			<div class="title">song</div>
+			<div class="singer">xwu</div>
+		</div>
+
+		<div class="progress">
+			<div class="bar">
+				<div class="progress-total"></div>
+				<div class="progress-now"></div>
+			</div>
+			<div class="time">0:00</div>
+		</div>
+
+		<div class="buttons">
+			<span class="backward"><i class= "fa fa-step-backward"></i></span>
+			<span class="play"><i class= "fa fa-pause"></i></span>
+			<span class="forward"><i class= "fa fa-step-forward"></i></span>
+		</div>
+	</div>
+
+	<script>
+	var musicList = []
+	var currentIndex = 0
+	var clock
+	var audio = new Audio()
+	audio.autoplay = true
+
+
+	function $(selector){
+		return document.querySelector(selector)
+	}
+
+	getMusicList(function(list){
+		console.log(list)
+		//var song = list[0]
+		//var audioObject = new Audio(song.src)
+		//audioObject.play()
+		musicList = list
+		loadMusic(list[currentIndex])
+	})
+
+	audio.ontimeupdate = function(){
+		console.log(this.currentTime)
+		$('.musicWrap .progress-now').style.width = (this.currentTime/this.duration)*100 + '%'
+		// var min = Math.floor(this.currentTime/60)
+		// var sec = Math.floor(this.currentTime)%60+''
+		// sec = sec.length===2 ? sec:'0'+sec
+		// $('.musicWrap .time').innerText = min + ':' + sec
+	}
+
+	audio.onplay = function(){
+		clock = setInterval(function(){
+			var min = Math.floor(audio.currentTime/60)
+			var sec = Math.floor(audio.currentTime)%60+''
+			sec = sec.length===2 ? sec:'0'+sec
+			$('.musicWrap .time').innerText = min + ':' + sec			
+		},1000)
+	}
+
+	audio.onpause = function(){
+		clearInterval(clock)
+	}
+
+	audio.onended = function(){
+		currentIndex = ++currentIndex%musicList.length
+		loadMusic(musicList[currentIndex])		
+	}
+
+	$('.musicWrap .play').onclick = function(){
+		if(audio.paused){
+			audio.play()
+			this.querySelector('.fa').classList.add('fa-pause')
+			this.querySelector('.fa').classList.remove('fa-play')
+		}else{
+			audio.pause()
+			this.querySelector('.fa').classList.remove('fa-pause')
+			this.querySelector('.fa').classList.add('fa-play')			
+		}
+	}
+
+	$('.musicWrap .forward').onclick = function(){
+		currentIndex = ++currentIndex%musicList.length
+		loadMusic(musicList[currentIndex])
+	}
+
+	$('.musicWrap .backward').onclick = function(){
+		currentIndex = (musicList.length + (--currentIndex))%musicList.length
+		loadMusic(musicList[currentIndex])
+	}
+
+	$('.musicWrap .bar').onclick = function(e){
+		var percent = e.offsetX / parseInt(getComputedStyle(this).width)
+		console.log(percent)
+		audio.currentTime = audio.duration * percent
+	} 
+	
+	function getMusicList(callback){
+		var xml = new XMLHttpRequest()
+		xml.open('GET','/music.json',true)
+		xml.onload = function(){
+			if(xml.status >=200 && xml.status <300 || xml.status ===304){
+				callback(JSON.parse(this.responseText))
+			}else{
+				console.log('获取失败')
+			}					
+		}
+		xml.send()
+	}
+
+	function loadMusic(musicObj){
+		console.log('musicinfo',musicObj)
+		$('.musicWrap .title').innerText = musicObj.title
+		$('.musicWrap .singer').innerText = musicObj.singer
+		audio.src = musicObj.src
+	}
+	</script>
+	
+</body>
+</html>
