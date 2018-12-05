@@ -1,0 +1,62 @@
+.musicWrap{
+	width: 300px;
+	margin: 0 auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+}
+
+.music{
+	
+}
+
+.music .title{
+	text-align: center;
+}
+
+.music .singer{
+	text-align: center;
+}
+
+.progress{
+	margin: 25px 0;
+	text-align: center;
+	display: flex;
+	align-items: center;
+  	justify-content: center;
+}
+
+.progress .bar{
+	width: 85%;
+	position: relative;
+}
+
+.bar .progress-total{
+	height: 6px;
+	background: #ccc;
+}
+
+.bar .progress-now{
+	width: 0;
+	height: 6px;
+	background: #000;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.time{
+	width: 15%;
+}
+
+.buttons{
+	text-align: center;
+}
+
+.backward,
+.play,
+.forward
+{
+	display: inline-block;
+	padding: 0 25px;
+	font-size: 25px;
+}
