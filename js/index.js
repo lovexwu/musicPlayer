@@ -75,7 +75,7 @@ var musicList = []
 	
 	function getMusicList(callback){
 		var xml = new XMLHttpRequest()
-		xml.open('GET','/music.json',true)
+		xml.open('GET','musicPlayer/music.json',true)
 		xml.onload = function(){
 			if(xml.status >=200 && xml.status <300 || xml.status ===304){
 				callback(JSON.parse(this.responseText))
